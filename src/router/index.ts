@@ -1,22 +1,18 @@
 import Vue from 'vue'
 import Router, { RouteConfig } from 'vue-router'
-import Home from '@/views/Home.vue'
 
 Vue.use(Router)
 
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    name: 'Home',
-    component: Home,
-    props: {
-      title: 'Notes'
-    }
+    name: 'Notes',
+    component: () => import(/* webpackChunkName: "Notes page" */ '@/views/Notes.vue')
   },
   {
-    path: '/about',
-    name: 'About',
-    component: () => import(/* webpackChunkName: "about" */ '@/views/About.vue')
+    path: '/:id',
+    name: 'Note',
+    component: () => import(/* webpackChunkName: "Note page" */ '@/views/Note.vue')
   }
 ]
 
@@ -24,7 +20,7 @@ const router = new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes,
-  scrollBehavior () {
+  scrollBehavior() {
     return { x: 0, y: 0 }
   }
 })

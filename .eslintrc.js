@@ -14,7 +14,7 @@ module.exports = {
   },
   rules: {
     'no-console': 'error',
-    'space-before-function-paren': ['error', 'always'],
+    'space-before-function-paren': ['error', 'never'],
     'vue/no-v-html': 0,
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'vue/html-self-closing': [
