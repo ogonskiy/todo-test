@@ -1,33 +1,207 @@
 <template>
   <div class="notes">
-    <note-card title="Welcome to Your Vue.js App"/>
+    <note-card
+      v-for="note in formattedNotes"
+      :key="note._id"
+      :title="note.title"
+      :tasks="note.tasks"
+    >
+      <template v-slot:remove-btn>
+        <button
+          class="notes__remove-btn"
+          @click="openRemoveNoteModal(note._id)"
+        >
+          ✕
+        </button>
+      </template>
+    </note-card>
+    <create-note-card>
+      <template v-slot:create-button>
+        <button
+          class="notes__create-button"
+          @click="openNoteCreationModal"
+        >
+          +
+        </button>
+      </template>
+    </create-note-card>
+    <modal v-if="isNoteCreationFormShown">
+      <template v-slot:header>
+        <h3>Create Note</h3>
+      </template>
+      <template v-slot:footer>
+        <button
+          @click="submitForm"
+        >
+          OK
+        </button>
+      </template>
+    </modal>
+
+    <modal v-if="isNoteRemovalModalShown">
+      <template v-slot:header>
+        <h3>Are you sure?</h3>
+      </template>
+      <template v-slot:footer>
+        <div class="notes__removal-modal-wrap">
+          <button
+            @click="removeNote"
+          >
+            Yes
+          </button>
+          <button
+            @click="closeRemovalModal"
+          >
+            Cancel
+          </button>
+        </div>
+      </template>
+    </modal>
   </div>
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator'
-import { Action } from 'vuex-class'
+import { Action, State } from 'vuex-class'
 import NoteCard from '@/components/NoteCard.vue'
+import CreateNoteCard from '@/components/CreateNoteCard.vue'
+import Modal from '@/components/Modal.vue'
 
 @Component({
   components: {
-    NoteCard
+    NoteCard,
+    CreateNoteCard,
+    Modal
   }
 })
 export default class Notes extends Vue {
+  @Action('notes/fetchNotes')
+  fetchNotes!: () => Promise<void>
+
+  @State(state => state.notes.notes)
+  notes!: ReadNoteResponse[]
+
   @Action('notes/createNote')
   createNote!: (payload: Note) => Promise<void>
 
-  mounted(): void {
-    this.createNote({
-      title: 'task',
-      tasks: [
-        {
-          description: 'any',
-          completed: false
-        }
-      ]
-    })
+  @Action('notes/deleteNote')
+  deleteNote!: (payload: DeleteNotePayload) => Promise<void>
+
+  isNoteCreationFormShown = false
+
+  isNoteRemovalModalShown = false
+
+  removeNoteId = ''
+
+  get formattedNotes(): ReadNoteResponse[] {
+    return this.notes.map(({ tasks, ...restNote }: ReadNoteResponse): ReadNoteResponse => ({
+      ...restNote,
+      tasks: tasks.slice(0, 3)
+    }))
+  }
+
+  openNoteCreationModal(): void {
+    this.isNoteCreationFormShown = true
+  }
+
+  openRemoveNoteModal(id: string) {
+    this.removeNoteId = id
+    this.isNoteRemovalModalShown = true
+  }
+
+  closeRemovalModal() {
+    this.isNoteRemovalModalShown = false
+  }
+
+  async submitForm(payload: any): Promise<void> {
+    try {
+      this.isNoteCreationFormShown = false
+    } catch (error) {
+      // TODO: add error handler
+    }
+  }
+
+  async removeNote(): Promise<void> {
+    try {
+      await this.deleteNote({ id: this.removeNoteId })
+      this.closeRemovalModal()
+      await this.fetchNotes()
+    } catch (error) {
+      // TODO: add error handler
+    }
+  }
+
+  async mounted(): Promise<void> {
+    try {
+      await this.fetchNotes()
+      // await this.createNote({
+      //   title: 'any 2',
+      //   tasks: [
+      //     {
+      //       description: 'asd',
+      //       completed: false
+      //     },
+      //     {
+      //       description: 'asd 2',
+      //       completed: false
+      //     },
+      //     {
+      //       description: 'asd 3',
+      //       completed: false
+      //     },
+      //     {
+      //       description: 'asd 4',
+      //       completed: false
+      //     }
+      //   ]
+      // })
+    } catch (error) {
+      // TODO: add error handler
+    }
   }
 }
 </script>
+<style lang="scss">
+.notes {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 40px;
+
+  &__remove-btn {
+    height: 25px;
+    width: 25px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:focus,
+    &:active {
+      outline: none;
+    }
+  }
+
+  &__create-button {
+    border-radius: 50%;
+    padding: 0;
+    margin: 0;
+    width: 32px;
+    height: 32px;
+    border: 2px solid #ada;
+    background-color: #fff;
+    font-size: 26px;
+    color: #ada;
+    cursor: pointer;
+
+    &:focus,
+    &:active {
+      outline: none;
+    }
+  }
+
+  &__removal-modal-wrap {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+</style>

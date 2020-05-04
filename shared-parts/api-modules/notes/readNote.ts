@@ -1,12 +1,12 @@
 import apiClient from '../../../shared-parts/apiClient'
 
-type ReadNote = (payload: ReadNotePayload) => Promise<Note>
+type ReadNote = (payload: ReadNotePayload) => Promise<ReadNoteResponse>
 
 const getUrl = (id: string): string => `/notes/${id}`
 
 const readNote: ReadNote = async({ id }) => {
-  const response: Note = await apiClient.get(getUrl(id))
-  return response
+  const { data }: { data: ReadNoteResponse } = await apiClient.get(getUrl(id))
+  return data
 }
 
 export { readNote }

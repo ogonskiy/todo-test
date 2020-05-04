@@ -14,14 +14,17 @@
     "types": ["webpack-env"],
     "paths": {
       "~/*": [
-        "/*"
+        "./"
       ],
       "@/*": [
         "src/*"
       ],
       "shared-parts": [
         "./shared-parts/*"
-      ]
+      ],
+      "assets/*": [
+        "src/assets/*"
+      ],
     },
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },

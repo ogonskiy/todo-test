@@ -24,9 +24,22 @@ declare global {
     completed: boolean;
   }
 
+  type ReadNoteTaskResponse = NoteTask & {
+    _id: string;
+  }
+
   type Note = {
     title: string;
     tasks: NoteTask[];
+  }
+
+  type ReadNoteResponse = {
+    title: string;
+    tasks: ReadNoteTaskResponse[];
+    updatedAt: string;
+    createdAt: string;
+    _id: string;
+    _v: string;
   }
 
   type ReadNotePayload = {

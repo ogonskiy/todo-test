@@ -13,10 +13,10 @@ module.exports = {
     ecmaVersion: 2020
   },
   rules: {
-    'no-console': 'error',
+    'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'space-before-function-paren': ['error', 'never'],
     'vue/no-v-html': 0,
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'vue/html-self-closing': [
       'error',
       {

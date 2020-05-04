@@ -2,7 +2,7 @@ import { MutationTree, ActionTree } from 'vuex'
 import * as api from '../../shared-parts/api-modules/notes'
 
 type NotesState = {
-  notes: Note[];
+  notes: ReadNoteResponse[];
 }
 
 const state: NotesState = {
@@ -14,19 +14,19 @@ const MUTATIONS = {
 }
 
 const mutations: MutationTree<NotesState> = {
-  [MUTATIONS.SET_NOTES](state, notes: Note[]) {
+  [MUTATIONS.SET_NOTES](state, notes: ReadNoteResponse[]) {
     state.notes = notes
   }
 }
 
 const actions: ActionTree<NotesState, any> = {
   async fetchNotes({ commit }): Promise<void> {
-    const notes: Note[] = await api.readNotes()
+    const notes: ReadNoteResponse[] = await api.readNotes()
     commit(MUTATIONS.SET_NOTES, notes)
   },
 
   async fetchNote(_ctx, payload: ReadNotePayload): Promise<Note> {
-    const response: Note = await api.readNote(payload)
+    const response: ReadNoteResponse = await api.readNote(payload)
     return response
   },
 
