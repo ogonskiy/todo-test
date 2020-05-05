@@ -1,4 +1,4 @@
-<template>
+<template functional>
   <transition name="modal">
     <div class="modal__mask">
       <div class="modal__wrapper">
@@ -54,7 +54,7 @@ export default class Modal extends Vue {}
     background-color: #fff;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
     transition: all 0.3s ease;
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: monospace;
     border-radius: 6px;
   }
 
@@ -63,10 +63,6 @@ export default class Modal extends Vue {}
     color: #666;
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
-  }
-
-  &__body {
-    margin: 20px 0;
   }
 
   &-enter {

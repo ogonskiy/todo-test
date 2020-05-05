@@ -19,22 +19,30 @@
       <template v-slot:create-button>
         <button
           class="notes__create-button"
-          @click="openNoteCreationModal"
+          @click="toggleNoteCreationModal"
         >
           +
         </button>
       </template>
     </create-note-card>
     <modal v-if="isNoteCreationFormShown">
-      <template v-slot:header>
-        <h3>Create Note</h3>
+      <template v-slot:body>
+        <note-form @form-update="updateCreationForm"/>
       </template>
       <template v-slot:footer>
-        <button
-          @click="submitForm"
-        >
-          OK
-        </button>
+        <div class="notes__modal-bottom-buttons">
+          <button
+            @click="submitForm"
+          >
+            Create
+          </button>
+          <button
+            @click="toggleNoteCreationModal"
+            class="notes__modal-cancel-button"
+          >
+            Cancel
+          </button>
+        </div>
       </template>
     </modal>
 
@@ -43,7 +51,7 @@
         <h3>Are you sure?</h3>
       </template>
       <template v-slot:footer>
-        <div class="notes__removal-modal-wrap">
+        <div class="notes__modal-bottom-buttons">
           <button
             @click="removeNote"
           >
@@ -66,12 +74,14 @@ import { Action, State } from 'vuex-class'
 import NoteCard from '@/components/NoteCard.vue'
 import CreateNoteCard from '@/components/CreateNoteCard.vue'
 import Modal from '@/components/Modal.vue'
+import NoteForm from '@/components/NoteForm.vue'
 
 @Component({
   components: {
     NoteCard,
     CreateNoteCard,
-    Modal
+    Modal,
+    NoteForm
   }
 })
 export default class Notes extends Vue {
@@ -100,8 +110,17 @@ export default class Notes extends Vue {
     }))
   }
 
-  openNoteCreationModal(): void {
-    this.isNoteCreationFormShown = true
+  createNoteForm: Note = {
+    title: '',
+    tasks: []
+  }
+
+  updateCreationForm(formData: Note) {
+    this.createNoteForm = formData
+  }
+
+  toggleNoteCreationModal(): void {
+    this.isNoteCreationFormShown = !this.isNoteCreationFormShown
   }
 
   openRemoveNoteModal(id: string) {
@@ -113,9 +132,12 @@ export default class Notes extends Vue {
     this.isNoteRemovalModalShown = false
   }
 
-  async submitForm(payload: any): Promise<void> {
+  async submitForm(): Promise<void> {
+    if (!this.createNoteForm.title) return
     try {
-      this.isNoteCreationFormShown = false
+      await this.createNote(this.createNoteForm)
+      this.toggleNoteCreationModal()
+      await this.fetchNotes()
     } catch (error) {
       // TODO: add error handler
     }
@@ -134,27 +156,6 @@ export default class Notes extends Vue {
   async mounted(): Promise<void> {
     try {
       await this.fetchNotes()
-      // await this.createNote({
-      //   title: 'any 2',
-      //   tasks: [
-      //     {
-      //       description: 'asd',
-      //       completed: false
-      //     },
-      //     {
-      //       description: 'asd 2',
-      //       completed: false
-      //     },
-      //     {
-      //       description: 'asd 3',
-      //       completed: false
-      //     },
-      //     {
-      //       description: 'asd 4',
-      //       completed: false
-      //     }
-      //   ]
-      // })
     } catch (error) {
       // TODO: add error handler
     }
@@ -174,11 +175,8 @@ export default class Notes extends Vue {
     background: none;
     border: none;
     cursor: pointer;
-
-    &:focus,
-    &:active {
-      outline: none;
-    }
+    margin-left: 10px;
+    padding-bottom: 5px;
   }
 
   &__create-button {
@@ -189,17 +187,17 @@ export default class Notes extends Vue {
     height: 32px;
     border: 2px solid #ada;
     background-color: #fff;
-    font-size: 26px;
+    font-size: 23px;
+    line-height: 23px;
     color: #ada;
     cursor: pointer;
-
-    &:focus,
-    &:active {
-      outline: none;
-    }
   }
 
-  &__removal-modal-wrap {
+  &__modal-cancel-button {
+    border: 2px solid rgb(207, 132, 132);
+  }
+
+  &__modal-bottom-buttons {
     display: flex;
     justify-content: space-between;
   }

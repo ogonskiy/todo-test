@@ -9,6 +9,7 @@
       <li
         v-for="task in props.tasks"
         :key="task._id"
+        :class="{ 'note-card__task--completed': task.completed }"
         class="note-card__task"
       >
         <input
@@ -58,15 +59,47 @@ export default class NoteCard extends Vue {}
   }
 
   &__task {
-    padding: 5px 0;
+    display: flex;
+    position: relative;
+    align-items: center;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 13px;
+      height: 13px;
+      background-color: #eee;
+      border: 1px solid #aaa;
+      border-radius: 50%;
+      top: 3px;
+      left: 4px;
+    }
+
+    &--completed {
+      &::after {
+        content: '';
+        position: absolute;
+        width: 12px;
+        height: 5px;
+        border-bottom: 2px solid rgb(106, 207, 106);
+        border-left: 2px solid rgb(106, 207, 106);
+        transform: rotateZ(-45deg);
+        top: 3.5px;
+        left: 7px;
+      }
+    }
   }
 
   &__task-checkbox {
-    margin-right: 5px;
+    position: relative;
+    width: 16px;
+    height: 16px;
+    opacity: 0;
+    z-index: 3;
   }
 
   &__task-description {
-    color: #666;
+    margin-left: 10px;
   }
 }
 </style>
