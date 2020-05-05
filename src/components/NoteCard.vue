@@ -1,8 +1,11 @@
 <template functional>
-  <div>
+  <div class="note-card">
     <div class="note-card__wrap">
     <div class="note-card__header">
-      <h3 class="note-card__title">{{ props.title }}</h3>
+      <h3
+        class="note-card__title"
+        @click="parent.$router.push(`/${props._id}`)"
+      >{{ props.title }}</h3>
       <slot name="remove-btn"/>
     </div>
     <ul class="note-card__tasks">
@@ -39,7 +42,13 @@ export default class NoteCard extends Vue {}
     margin: 10px;
     border-radius: 6px;
     box-shadow: 0 2px 4px #ddd;
+    transition: transform 0.25s, box-shadow 0.25s;
     min-width: 110px;
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 3px 4px rgba(0, 0, 0, 0.2);
+    }
   }
 
   &__header {
@@ -51,6 +60,7 @@ export default class NoteCard extends Vue {}
 
   &__title {
     margin-top: 0;
+    cursor: pointer;
   }
 
   &__tasks {

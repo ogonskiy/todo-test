@@ -3,15 +3,19 @@
     <note-card
       v-for="note in formattedNotes"
       :key="note._id"
+      :_id="note._id"
       :title="note.title"
       :tasks="note.tasks"
     >
       <template v-slot:remove-btn>
         <button
           class="notes__remove-btn"
-          @click="openRemoveNoteModal(note._id)"
+          @click.prevent="openRemoveNoteModal(note._id)"
         >
-          ✕
+          <img
+            src="../assets/trash-alt-regular.svg"
+            alt="remove"
+          >
         </button>
       </template>
     </note-card>
@@ -37,8 +41,8 @@
             Create
           </button>
           <button
-            @click="toggleNoteCreationModal"
             class="notes__modal-cancel-button"
+            @click="toggleNoteCreationModal"
           >
             Cancel
           </button>
@@ -58,6 +62,7 @@
             Yes
           </button>
           <button
+            class="notes__modal-cancel-button"
             @click="closeRemovalModal"
           >
             Cancel
@@ -123,12 +128,12 @@ export default class Notes extends Vue {
     this.isNoteCreationFormShown = !this.isNoteCreationFormShown
   }
 
-  openRemoveNoteModal(id: string) {
+  openRemoveNoteModal(id: string): void {
     this.removeNoteId = id
     this.isNoteRemovalModalShown = true
   }
 
-  closeRemovalModal() {
+  closeRemovalModal(): void {
     this.isNoteRemovalModalShown = false
   }
 
@@ -169,14 +174,13 @@ export default class Notes extends Vue {
   margin-top: 40px;
 
   &__remove-btn {
-    height: 25px;
-    width: 25px;
+    height: 17px;
+    width: 14px;
     padding: 0;
     background: none;
     border: none;
     cursor: pointer;
     margin-left: 10px;
-    padding-bottom: 5px;
   }
 
   &__create-button {

@@ -25,7 +25,7 @@ const actions: ActionTree<NotesState, any> = {
     commit(MUTATIONS.SET_NOTES, notes)
   },
 
-  async fetchNote(_ctx, payload: ReadNotePayload): Promise<Note> {
+  async fetchNote(_ctx, payload: ReadNotePayload): Promise<ReadNoteResponse> {
     const response: ReadNoteResponse = await api.readNote(payload)
     return response
   },

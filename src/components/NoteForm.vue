@@ -1,22 +1,23 @@
 <template>
   <div class="note-form">
     <div class="note-form__header">
-    <input
-      v-if="allowEditTitle"
-      v-model="noteForm.title"
-      type="text"
-      class="note-form__header-input"
-      placeholder="Note title..."
-      @blur="doneEditTitle"
-      @keyup.enter="doneEditTitle"
-      @keyup.esc="cancelEditTitle"
-    >
-    <h3
-      v-else
-      @dblclick="editTitle"
-    >
-      {{ noteForm.title }}
-    </h3>
+      <input
+        v-if="allowEditTitle"
+        v-model="noteForm.title"
+        type="text"
+        class="note-form__header-input"
+        placeholder="Note title..."
+        @blur="doneEditTitle"
+        @keyup.enter="doneEditTitle"
+        @keyup.esc="cancelEditTitle"
+      >
+      <h3
+        v-else
+        @dblclick="editTitle"
+      >
+        {{ noteForm.title }}
+      </h3>
+      <slot name="header-right"/>
     </div>
     <div class="note-form__input-wrap">
       <div>
@@ -86,7 +87,7 @@
           {{ task.description }}
         </label>
         <button
-          class="notes__remove-btn"
+          class="note-form__remove-btn"
           @click="removeTask(index)"
         >
           ✕
@@ -97,7 +98,7 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Watch } from 'vue-property-decorator'
+import { Vue, Component, Watch, Prop } from 'vue-property-decorator'
 import { clone } from 'ramda'
 
 const AMOUNT_OF_ELEMENTS_TO_REMOVE = 1
@@ -105,6 +106,15 @@ const EMPTY_STRING = ''
 
 @Component
 export default class NoteForm extends Vue {
+  @Prop({ type: Object, default: null })
+  noteData!: Note | null
+
+  @Watch('noteData', { immediate: true })
+  noteDataChanged(noteData: Note | null) {
+    if (!noteData) return
+    this.noteForm = clone(noteData)
+  }
+
   inputText = ''
 
   allowEditTitle = false
@@ -155,10 +165,8 @@ export default class NoteForm extends Vue {
   }
 
   readLastUndoState(): void {
-    const previousTasksState: Note = clone(this.undoTasksCache[this.undoTasksCache.length - 1]) || {
-      title: '',
-      tasks: []
-    }
+    const previousTasksState: Note = clone(this.undoTasksCache[this.undoTasksCache.length - 1]) ||
+      this.noteData || { title: '', tasks: [] }
     this.shouldUpdateUndoCache = false
     this.noteForm.tasks = previousTasksState.tasks
     this.noteForm.title = previousTasksState.title
@@ -266,6 +274,9 @@ export default class NoteForm extends Vue {
     border-bottom: 1px solid #eee;
     padding-bottom: 10px;
     margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
     h3 {
       margin: 0;
@@ -323,8 +334,12 @@ export default class NoteForm extends Vue {
   }
 
   &__checkbox-label {
-    margin-bottom: 6px;
     margin-left: 10px;
+    margin-right: 10px;
+  }
+
+  &__remove-btn {
+    border: 0;
   }
 }
 </style>
